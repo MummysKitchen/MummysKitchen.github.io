@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mummy's Kitchen</title>
+  <title>Mummy's Kitchen - Interactive 3D</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background-color: #fdf3e1;
       color: #333;
     }
@@ -15,7 +15,7 @@
       background-color: #ff5722;
       color: white;
       text-align: center;
-      padding: 20px 10px;
+      padding: 20px;
     }
     header h1 {
       margin: 0;
@@ -30,32 +30,11 @@
       height: 500px;
       background-color: #ececec;
     }
-    main {
-      padding: 20px;
-      text-align: center;
-    }
-    main h2 {
-      font-size: 2em;
-      margin-bottom: 10px;
-    }
-    main p {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
-    .cta-button {
-      padding: 15px 30px;
-      background-color: #ff5722;
-      color: white;
-      text-decoration: none;
-      font-size: 1.2em;
-      border-radius: 5px;
-    }
     footer {
       background-color: #333;
       color: white;
       text-align: center;
       padding: 10px;
-      margin-top: 20px;
     }
   </style>
 </head>
@@ -65,11 +44,6 @@
     <p>Home-Cooked Meals Delivered Fresh</p>
   </header>
   <div id="threejs-container"></div>
-  <main>
-    <h2>Experience the Taste of Home</h2>
-    <p>We bring you fresh, homemade meals cooked with love and care. Place your order now and enjoy authentic, delicious food.</p>
-    <a href="#order" class="cta-button">Order Now</a>
-  </main>
   <footer>
     <p>&copy; 2024 Mummy's Kitchen | All Rights Reserved</p>
   </footer>
@@ -107,14 +81,39 @@
     // Camera Position
     camera.position.z = 12;
 
-    // Animation
+    // Add interactivity
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    // Animation loop
     function animate() {
       requestAnimationFrame(animate);
-      plate.rotation.z += 0.01; // Plate spinning
-      food.rotation.y += 0.02;  // Food spinning
       renderer.render(scene, camera);
     }
     animate();
+
+    // Event Listener for Click/Touch
+    function onMouseClick(event) {
+      // Calculate mouse position in normalized device coordinates (-1 to +1)
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Update raycaster
+      raycaster.setFromCamera(mouse, camera);
+
+      // Check for intersections
+      const intersects = raycaster.intersectObject(plate);
+
+      if (intersects.length > 0) {
+        // Move the plate to a random position within a certain range
+        plate.position.x = Math.random() * 10 - 5;
+        plate.position.z = Math.random() * 10 - 5;
+      }
+    }
+
+    // Add Event Listeners
+    renderer.domElement.addEventListener('click', onMouseClick, false);
 
     // Responsive Design
     window.addEventListener('resize', () => {
